@@ -7,7 +7,8 @@ async function bootstrap() {
     cors: true,
     abortOnError: false,
   });
-  console.log(`Server Listening On Port ${await app.getUrl()}`);
+
   await app.listen(config.PORT);
+  console.log(`Server Listening On Port ${await app.getUrl()}`);
 }
 bootstrap();

@@ -9,12 +9,19 @@ import { CatsModule } from './cat/cats.module';
   imports: [
     MongooseModule.forRoot(config.MONGO_URI, {
       connectionFactory: (connection) => {
-        connection.once('open', () => {
-          console.log('MongoDB connection established');
+        connection.on('connected', () => {
+          console.log('Connected To Database ✅');
         });
-        connection.on('error', (err) => {
-          console.error('MongoDB connection error:', err);
+
+        connection.on('disconnected', () => {
+          console.log('Disconnected To Database ❌');
         });
+
+        connection.on('error', (error) => {
+          console.log('Database Connection Error ❌ ', error);
+        });
+
+        connection._events.connected();
         return connection;
       },
     }),

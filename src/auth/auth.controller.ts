@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { UserService } from './auth.service';
 import { User, UserDocument } from './schema/user.schema';
 
@@ -11,9 +21,41 @@ export class UserController {
     return await this.userService.create(createCatDto);
   }
 
-  @Get('/oAuth')
-  async createOAuthUser() {
-    return { success: true };
+  @Get('/oAuth2')
+  getOAuthUrl() {
+    const url = this.userService.getOAuthUrl();
+
+    return {
+      data: url,
+      success: true,
+    };
+  }
+
+  @Get('/oauth2callback')
+  async registerOAuthUser(@Query() code: string) {
+    try {
+      const user = await this.userService.createOAuthUser(code);
+
+      return {
+        data: user,
+        success: true,
+        message: 'User Registered Successfully!',
+      };
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new HttpException(
+          {
+            status: HttpStatus.FORBIDDEN,
+            success: false,
+            message: error.message,
+          },
+          HttpStatus.FORBIDDEN,
+          {
+            cause: error,
+          },
+        );
+      }
+    }
   }
 
   @Get('/user-list')

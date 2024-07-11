@@ -1,4 +1,6 @@
 export default {
-  PORT: 5080,
-  MONGO_URI: 'Your Mongo DB URI',
+  PORT: 4040,
+  MONGO_URI: '',
+  GOOGLE_CLIENT_SECRET: '',
+  GOOGLE_CLIENT_ID: '',
 };

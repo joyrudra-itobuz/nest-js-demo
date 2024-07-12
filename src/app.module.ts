@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
+import { MongooseModule } from '@nestjs/mongoose';
+
+import config from './config/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import config from './config/config';
 import { CatsModule } from './cat/cats.module';
 import { AuthModule } from './auth/auth.module';
 
@@ -26,6 +28,7 @@ import { AuthModule } from './auth/auth.module';
         return connection;
       },
     }),
+    CacheModule.register(),
     CatsModule,
     AuthModule,
   ],

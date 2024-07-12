@@ -30,12 +30,13 @@ export class UserService {
     const url = this.oAuth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: ['profile', 'email', 'openid'],
+      prompt: 'consent',
     });
 
     return url;
   }
 
-  async createOAuthUser(code: string) {
+  async verifyOAuthUser(code: string) {
     const { tokens } = await this.oAuth2Client.getToken(code);
     this.oAuth2Client.setCredentials(tokens);
 
@@ -45,6 +46,8 @@ export class UserService {
     });
 
     const payload = ticket.getPayload();
+
+    console.log({ payload });
 
     const email = payload['email'];
     const name = payload['name'];

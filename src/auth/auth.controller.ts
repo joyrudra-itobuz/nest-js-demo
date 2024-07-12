@@ -34,7 +34,7 @@ export class UserController {
   @Get('/oauth2callback')
   async registerOAuthUser(@Query() code: string) {
     try {
-      const user = await this.userService.createOAuthUser(code);
+      const user = await this.userService.verifyOAuthUser(code);
 
       return {
         data: user,

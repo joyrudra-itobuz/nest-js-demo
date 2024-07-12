@@ -3,18 +3,31 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpException,
   HttpStatus,
   Param,
   Post,
   Query,
 } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UserService } from './user.auth.service';
 import { User, UserDocument } from './schema/user.schema';
+import { Public } from './decorators/public.decorator';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+export class AuthController {
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post('login')
+  signIn(@Body() { email, password }: { email: string; password: string }) {
+    return this.authService.signIn(email, password);
+  }
 
   @Post('/register')
   async create(@Body() createCatDto: UserDocument) {
@@ -55,6 +68,17 @@ export class UserController {
           },
         );
       }
+
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          success: false,
+        },
+        HttpStatus.FORBIDDEN,
+        {
+          cause: error,
+        },
+      );
     }
   }
 
@@ -65,7 +89,7 @@ export class UserController {
 
   @Get('/profile/:id')
   async findOne(@Param('id') id: string): Promise<User> {
-    return this.userService.findOne(id);
+    return this.userService.profile(id);
   }
 
   @Delete('/profile/:id')

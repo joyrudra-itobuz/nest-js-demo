@@ -5,8 +5,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import config from './config/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CatsModule } from './cat/cats.module';
-import { AuthModule } from './auth/auth.module';
+import { CatsModule } from './modules/cat/cats.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { AuthController } from './modules/auth/auth.controller';
+import { UserService } from './modules/user/user.service';
 
 @Module({
   imports: [
@@ -32,7 +34,7 @@ import { AuthModule } from './auth/auth.module';
     CatsModule,
     AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, AuthController],
+  providers: [AppService, UserService],
 })
 export class AppModule {}

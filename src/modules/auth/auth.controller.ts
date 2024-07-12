@@ -10,10 +10,11 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { UserService } from './user.auth.service';
 import { User, UserDocument } from './schema/user.schema';
 import { Public } from './decorators/public.decorator';
 import { AuthService } from './auth.service';
+import { UserService } from '../user/user.service';
+import { UserPayload } from 'src/shared/types/UserTypes';
 
 @Controller('auth')
 export class AuthController {
@@ -26,6 +27,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() { email, password }: { email: string; password: string }) {
+    console.log(email, password);
     return this.authService.signIn(email, password);
   }
 
@@ -87,9 +89,12 @@ export class AuthController {
     return this.userService.findAll();
   }
 
-  @Get('/profile/:id')
-  async findOne(@Param('id') id: string): Promise<User> {
-    return this.userService.profile(id);
+  @Get('/profile')
+  async findOne(@Body() body: UserPayload) {
+    return {
+      data: body.payload,
+      success: true,
+    };
   }
 
   @Delete('/profile/:id')

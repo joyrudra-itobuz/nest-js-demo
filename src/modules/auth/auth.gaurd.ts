@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import constants from './constants';
 import { IS_PUBLIC_KEY } from './decorators/public.decorator';
-import { UserService } from './user.auth.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -47,7 +47,7 @@ export class AuthGuard implements CanActivate {
         throw new UnauthorizedException('Denied!');
       }
 
-      request.payload = user;
+      request.body.payload = user;
     } catch {
       throw new UnauthorizedException();
     }

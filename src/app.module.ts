@@ -7,8 +7,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CatsModule } from './modules/cat/cats.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { AuthController } from './modules/auth/auth.controller';
-import { UserService } from './modules/user/user.service';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -33,8 +32,9 @@ import { UserService } from './modules/user/user.service';
     CacheModule.register(),
     CatsModule,
     AuthModule,
+    UserModule,
   ],
-  controllers: [AppController, AuthController],
-  providers: [AppService, UserService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

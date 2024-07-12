@@ -9,7 +9,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { UserService } from './auth.service';
+import { UserService } from './user.service';
 import { User, UserDocument } from './schema/user.schema';
 
 @Controller('auth')

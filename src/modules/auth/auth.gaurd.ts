@@ -31,8 +31,9 @@ export class AuthGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
+
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({ success: false });
     }
 
     try {
@@ -44,12 +45,12 @@ export class AuthGuard implements CanActivate {
       const user = await this.userService.profile(_id);
 
       if (!user) {
-        throw new UnauthorizedException('Denied!');
+        throw new UnauthorizedException({ message: 'Denied!', success: false });
       }
 
       request.body.payload = user;
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({ success: 'false' });
     }
 
     return true;

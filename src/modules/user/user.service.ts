@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -10,11 +11,13 @@ import config from 'src/config/config';
 import bcrypt from 'bcrypt';
 import { User } from '../auth/schema/user.schema';
 import { CreateUserDto } from '../auth/dto/create.user.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly UserModel: Model<User>,
+    private jwtService: JwtService,
   ) {}
 
   oAuth2Client = new OAuth2Client(
@@ -68,7 +71,12 @@ export class UserService {
     const doesUserExists = await this.UserModel.findOne({ email });
 
     if (doesUserExists) {
-      return doesUserExists;
+      const jwtPayload = { _id: doesUserExists._id };
+
+      return {
+        access_token: await this.jwtService.signAsync(jwtPayload),
+        refresh_token: await this.jwtService.signAsync(jwtPayload),
+      };
     }
 
     const createdUser = await this.UserModel.create({
@@ -81,7 +89,47 @@ export class UserService {
       throw new Error('Error While Creating a new User!');
     }
 
-    return createdUser;
+    const jwtPayload = { _id: createdUser._id };
+
+    return {
+      access_token: await this.jwtService.signAsync(jwtPayload),
+      refresh_token: await this.jwtService.signAsync(jwtPayload),
+    };
+  }
+
+  async verifyToken({
+    refresh_token,
+    access_token,
+  }: {
+    refresh_token: string;
+    access_token: string;
+  }) {
+    try {
+      const isValidRefreshToken = await this.jwtService.verify(refresh_token);
+      const isValidRefreshToken = await this.jwtService.verify(access_token);
+
+      if (isValidRefreshToken || isValidRefreshToken) {
+        return new BadRequestException({
+          success: false,
+          message: 'Try Signing in again 😢!',
+        });
+      }
+
+      const isValidUser = await this.UserModel.findById(
+        isValidRefreshToken._id,
+      );
+
+      if (!isValidUser) {
+        throw new Error('Okay?');
+      }
+
+      return { success: true, message: 'Welcome 🥰!' };
+    } catch (error) {
+      return new BadRequestException({
+        success: false,
+        message: 'Try Signing in again 😢!',
+      });
+    }
   }
 
   async findAll(): Promise<User[]> {

@@ -9,12 +9,14 @@ import {
   Param,
   Post,
   Query,
+  Res,
 } from '@nestjs/common';
 import { User, UserDocument } from './schema/user.schema';
 import { Public } from './decorators/public.decorator';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { UserPayload } from 'src/shared/types/UserTypes';
+import config from 'src/config/config';
 
 @Controller('auth')
 export class AuthController {
@@ -49,15 +51,13 @@ export class AuthController {
 
   @Public()
   @Get('/oauth2callback')
-  async registerOAuthUser(@Query() code: string) {
+  async registerOAuthUser(@Query() code: string, @Res() res) {
     try {
-      const user = await this.userService.verifyOAuthUser(code);
+      const tokens = await this.userService.verifyOAuthUser(code);
 
-      return {
-        data: user,
-        success: true,
-        message: 'User Registered Successfully!',
-      };
+      res.redirect(
+        `http://${config.CLIENT}?access_token=${tokens.access_token}&refresh_token=${tokens.refres_token}`,
+      );
     } catch (error) {
       if (error instanceof Error) {
         throw new HttpException(
@@ -84,6 +84,14 @@ export class AuthController {
         },
       );
     }
+  }
+
+  @Public()
+  @Post('/verify-tokens')
+  async verifyToken(
+    @Body() token: { access_token: string; refresh_token: string },
+  ) {
+    return this.userService.verifyToken(token);
   }
 
   @Get('/user-list')

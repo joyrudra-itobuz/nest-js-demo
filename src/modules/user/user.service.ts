@@ -4,12 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import type { Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { OAuth2Client } from 'google-auth-library';
 import config from 'src/config/config';
 import bcrypt from 'bcrypt';
 import { User } from '../auth/schema/user.schema';
-import type { CreateUserDto } from '../auth/dto/create.user.dto';
+import { CreateUserDto } from '../auth/dto/create.user.dto';
 
 @Injectable()
 export class UserService {

@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { Cat } from './schemas/cat.schema';
@@ -9,7 +17,19 @@ export class CatsController {
 
   @Post()
   async create(@Body() createCatDto: CreateCatDto) {
-    return await this.catsService.create(createCatDto);
+    try {
+      console.log(createCatDto);
+
+      const user = await this.catsService.create(createCatDto);
+
+      return {
+        data: user,
+        success: true,
+        message: 'Hurray! We just made you a new Account!',
+      };
+    } catch (error) {
+      throw new BadRequestException({ success: false });
+    }
   }
 
   @Get()

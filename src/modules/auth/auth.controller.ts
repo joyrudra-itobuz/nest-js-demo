@@ -27,15 +27,16 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() { email, password }: { email: string; password: string }) {
-    console.log(email, password);
     return this.authService.signIn(email, password);
   }
 
+  @Public()
   @Post('/register')
-  async create(@Body() createCatDto: UserDocument) {
-    return await this.userService.create(createCatDto);
+  async create(@Body() createUserDto: UserDocument) {
+    return await this.userService.create(createUserDto);
   }
 
+  @Public()
   @Get('/oAuth2')
   getOAuthUrl() {
     const url = this.userService.getOAuthUrl();
@@ -46,6 +47,7 @@ export class AuthController {
     };
   }
 
+  @Public()
   @Get('/oauth2callback')
   async registerOAuthUser(@Query() code: string) {
     try {

@@ -1,12 +1,12 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 
-import { JwtService } from '@nestjs/jwt';
+import type { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
-import { UserService } from '../user/user.service';
+import type { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +23,10 @@ export class AuthService {
     }
 
     if (!(await bcrypt.compare(pass, user.password))) {
-      throw new UnauthorizedException('Wrong Password!');
+      throw new BadRequestException({
+        success: false,
+        message: 'Wrong Password!',
+      });
     }
 
     const payload = { _id: user._id };

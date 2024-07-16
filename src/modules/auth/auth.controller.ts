@@ -17,6 +17,7 @@ import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { UserPayload } from 'src/shared/types/UserTypes';
 import config from 'src/config/config';
+import { Refresh } from './decorators/refresh.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -86,12 +87,10 @@ export class AuthController {
     }
   }
 
-  @Public()
-  @Post('/verify-tokens')
-  async verifyToken(
-    @Body() token: { access_token: string; refresh_token: string },
-  ) {
-    return this.userService.verifyToken(token);
+  @Refresh()
+  @Get('/refresh-token')
+  async verifyToken(@Body() body: UserPayload) {
+    return this.authService.refreshToken(body.payload._id);
   }
 
   @Get('/user-list')

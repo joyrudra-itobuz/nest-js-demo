@@ -10,6 +10,7 @@ import { Request } from 'express';
 import constants from './constants';
 import { IS_PUBLIC_KEY } from './decorators/public.decorator';
 import { UserService } from '../user/user.service';
+import { IS_REFRESH_KEY } from './decorators/refresh.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -25,6 +26,11 @@ export class AuthGuard implements CanActivate {
       context.getClass(),
     ]);
 
+    const isRefresh = this.reflector.getAllAndOverride<boolean>(
+      IS_REFRESH_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+
     if (isPublic) {
       return true;
     }
@@ -38,10 +44,11 @@ export class AuthGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: constants.JWT_ACCESS_SECRET,
+        secret: isRefresh
+          ? constants.JWT_REFRESH_SECRET
+          : constants.JWT_ACCESS_SECRET,
       });
       const { _id } = payload;
-
       const user = await this.userService.profile(_id);
 
       if (!user) {

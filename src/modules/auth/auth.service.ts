@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 import { UserService } from '../user/user.service';
+import constants from './constants';
 
 @Injectable()
 export class AuthService {
@@ -34,11 +35,29 @@ export class AuthService {
     return {
       data: {
         access_token: await this.jwtService.signAsync(payload),
-        refresh_token: await this.jwtService.signAsync(payload),
+        refresh_token: await this.jwtService.signAsync(payload, {
+          secret: constants.JWT_REFRESH_SECRET,
+          expiresIn: '180d',
+        }),
         user,
       },
       success: true,
       message: 'Welcome Back😍!',
+    };
+  }
+
+  async refreshToken(_id: string) {
+    const payload = { _id };
+
+    return {
+      data: {
+        access_token: await this.jwtService.signAsync(payload),
+        refresh_token: await this.jwtService.signAsync(payload, {
+          secret: constants.JWT_REFRESH_SECRET,
+          expiresIn: '180d',
+        }),
+      },
+      success: true,
     };
   }
 }

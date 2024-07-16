@@ -1,3 +1,5 @@
 import { User } from 'src/modules/auth/schema/user.schema';
 
-export type UserPayload = { payload: User };
+export type UserPayload = {
+  payload: User & { _id: string };
+};

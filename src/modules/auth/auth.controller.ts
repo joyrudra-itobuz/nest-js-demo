@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Param,
   Post,
@@ -18,6 +17,7 @@ import { UserService } from '../user/user.service';
 import { UserPayload } from 'src/shared/types/UserTypes';
 import config from 'src/config/config';
 import { Refresh } from './decorators/refresh.decorator';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -52,44 +52,18 @@ export class AuthController {
 
   @Public()
   @Get('/oauth2callback')
-  async registerOAuthUser(@Query() code: string, @Res() res) {
-    try {
-      const tokens = await this.userService.verifyOAuthUser(code);
+  async registerOAuthUser(@Query() code: string, @Res() res: Response) {
+    const tokens = await this.userService.verifyOAuthUser(code);
 
-      res.redirect(
-        `http://${config.CLIENT}?access_token=${tokens.access_token}&refresh_token=${tokens.refresh_token}`,
-      );
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new HttpException(
-          {
-            status: HttpStatus.FORBIDDEN,
-            success: false,
-            message: error.message,
-          },
-          HttpStatus.FORBIDDEN,
-          {
-            cause: error,
-          },
-        );
-      }
-
-      throw new HttpException(
-        {
-          status: HttpStatus.FORBIDDEN,
-          success: false,
-        },
-        HttpStatus.FORBIDDEN,
-        {
-          cause: error,
-        },
-      );
-    }
+    res.redirect(
+      `http://${config.CLIENT}?access_token=${tokens.access_token}&refresh_token=${tokens.refresh_token}`,
+    );
   }
 
   @Refresh()
   @Get('/refresh-token')
   async verifyToken(@Body() body: UserPayload) {
+    console.log('Token');
     return this.authService.refreshToken(body.payload._id);
   }
 

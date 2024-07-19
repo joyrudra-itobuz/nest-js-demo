@@ -57,7 +57,7 @@ export class AuthController {
       const tokens = await this.userService.verifyOAuthUser(code);
 
       res.redirect(
-        `http://${config.CLIENT}?access_token=${tokens.access_token}&refresh_token=${tokens.refres_token}`,
+        `http://${config.CLIENT}?access_token=${tokens.access_token}&refresh_token=${tokens.refresh_token}`,
       );
     } catch (error) {
       if (error instanceof Error) {

@@ -106,9 +106,9 @@ export class UserService {
   }) {
     try {
       const isValidRefreshToken = await this.jwtService.verify(refresh_token);
-      const isValidRefreshToken = await this.jwtService.verify(access_token);
+      const isValidAccessToken = await this.jwtService.verify(access_token);
 
-      if (isValidRefreshToken || isValidRefreshToken) {
+      if (isValidRefreshToken || isValidAccessToken) {
         return new BadRequestException({
           success: false,
           message: 'Try Signing in again 😢!',

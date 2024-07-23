@@ -5,7 +5,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import config from './config/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CatsModule } from './modules/cat/cats.module';
 import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
@@ -29,7 +28,6 @@ import { AuthModule } from './modules/auth/auth.module';
       },
     }),
     CacheModule.register(),
-    CatsModule,
     AuthModule,
   ],
   controllers: [AppController],

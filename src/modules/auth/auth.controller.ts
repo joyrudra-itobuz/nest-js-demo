@@ -63,7 +63,6 @@ export class AuthController {
   @Refresh()
   @Get('/refresh-token')
   async verifyToken(@Body() body: UserPayload) {
-    console.log('Token');
     return this.authService.refreshToken(body.payload._id);
   }
 
